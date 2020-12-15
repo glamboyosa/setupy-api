@@ -22,6 +22,9 @@ import { context } from './utils/context';
   );
   app.use(cookieParser());
   app.use(express.static('images'));
+  app.use('/', (req, res) => {
+    res.send('<p>so it does not fail</p>');
+  });
   await createConnection({
     type: 'postgres',
     host: __prod__ ? process.env.DB_HOST : 'localhost',
@@ -37,6 +40,7 @@ import { context } from './utils/context';
   });
   const apolloServer = new ApolloServer({
     introspection: true,
+    playground: true,
     schema: await buildSchema({
       resolvers: [HelloResolver, UserResolver, PostsResolver],
       validate: false,
