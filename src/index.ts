@@ -1,8 +1,8 @@
 import { ApolloServer } from 'apollo-server-express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import { createConnection } from 'typeorm';
