@@ -17,7 +17,7 @@ import { context } from './utils/context';
   app.use(
     cors({
       credentials: true,
-      origin: ['https://setupy.vercel.app', 'http://localhost:3000'],
+      origin: ['https://setupy-web.vercel.app', 'http://localhost:3000'],
     })
   );
   app.use(cookieParser());
