@@ -1,6 +1,6 @@
 import { ApolloServer } from 'apollo-server-express';
-import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 import express from 'express';
 import 'reflect-metadata';
@@ -22,7 +22,7 @@ import { context } from './utils/context';
   );
   app.use(cookieParser());
   app.use(express.static('images'));
-  app.use('/', (req, res) => {
+  app.use('/', (_, res) => {
     res.send('<p>so it does not fail</p>');
   });
   await createConnection({
