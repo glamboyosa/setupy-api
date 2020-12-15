@@ -19,4 +19,4 @@ web app can be found at https://github.com/glamboyosa-setupy-web
 
 ### Credit
 
-The GIF used in index is gotten from [Justas Galaburda](https://dribbble.com/shots/4085472-To-the-Stars-and-Beyond)
+The picture used on the homepage is gotten from [Andy Celis](https://dribbble.com/shots/4772685-Lift-off)
