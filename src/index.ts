@@ -22,9 +22,6 @@ import { context } from './utils/context';
   );
   app.use(cookieParser());
   app.use(express.static('images'));
-  app.use('/', (_, res) => {
-    res.send('<p>so it does not fail</p>');
-  });
   await createConnection({
     type: 'postgres',
     host: __prod__ ? process.env.DB_HOST : 'localhost',
