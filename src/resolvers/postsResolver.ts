@@ -2,9 +2,10 @@ import { Arg, Mutation, Query, Resolver } from 'type-graphql';
 import { Posts } from '../entities/posts';
 import { User } from '../entities/user';
 import { PostsResponse } from '../utils/response';
-import { getConnection } from 'typeorm';
+import { getConnection, getRepository } from 'typeorm';
 @Resolver()
 export class PostsResolver {
+  postReposity = getRepository(Posts);
   @Query(() => PostsResponse)
   async GetPostById(@Arg('id') id: number) {
     const post = await Posts.findOne({ where: { id } });
@@ -140,5 +141,14 @@ export class PostsResolver {
       return true;
     }
     return true;
+  }
+  @Mutation(() => Boolean, { nullable: true })
+  async DeletePost(@Arg('id') id: number) {
+    try {
+      await this.postReposity.delete(id);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
