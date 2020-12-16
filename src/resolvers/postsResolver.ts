@@ -126,8 +126,7 @@ export class PostsResolver {
   @Mutation(() => Boolean, { nullable: true })
   async DeletePost(@Arg('id') id: number) {
     try {
-      const post = await this.postRepository.findOne({ id });
-      await post?.remove();
+      await this.postRepository.delete(id);
       return true;
     } catch (e) {
       return false;

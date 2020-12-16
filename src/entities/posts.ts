@@ -25,10 +25,10 @@ export class Posts extends BaseEntity {
   photoPath: string;
 
   @Field(() => User)
-  @ManyToOne(() => User, (user) => user.posts)
+  @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
   user: User;
 
   @Field(() => [Votes])
-  @OneToMany(() => Votes, (votes) => votes.posts)
+  @OneToMany(() => Votes, (votes) => votes.posts, { onDelete: 'CASCADE' })
   votes: Votes[];
 }

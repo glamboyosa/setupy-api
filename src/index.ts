@@ -27,7 +27,7 @@ import { VotesResolver } from './resolvers/votesResolver';
     type: 'postgres',
     host: __prod__ ? process.env.DB_HOST : 'localhost',
     port: 5432,
-    database: process.env.DB,
+    database: 'setupy-db',
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     synchronize: true,

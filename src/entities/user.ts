@@ -26,6 +26,6 @@ export class User extends BaseEntity {
   username: string;
 
   @Field(() => [Posts])
-  @OneToMany(() => Posts, (post) => post.user)
+  @OneToMany(() => Posts, (post) => post.user, { onDelete: 'CASCADE' })
   posts: Posts[];
 }

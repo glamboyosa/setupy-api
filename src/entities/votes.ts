@@ -20,6 +20,6 @@ export class Votes extends BaseEntity {
   type: string;
 
   @Field(() => Posts)
-  @ManyToOne(() => Posts, (post) => post.votes)
+  @ManyToOne(() => Posts, (post) => post.votes, { onDelete: 'CASCADE' })
   posts: Posts;
 }
