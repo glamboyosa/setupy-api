@@ -11,7 +11,7 @@ export class PostsResolver {
   async GetPostById(@Arg('id') id: number) {
     const post = await this.postRepository.findOne(
       { id },
-      { relations: ['votes'] }
+      { relations: ['votes', 'user'] }
     );
     if (!post) {
       return {
