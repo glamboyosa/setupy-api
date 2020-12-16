@@ -10,6 +10,7 @@ import {
   Query,
   Resolver,
 } from 'type-graphql';
+import { getRepository } from 'typeorm';
 import { User } from '../entities/user';
 import { COOKIE_NAME, __prod__ } from '../utils/constants';
 import { context } from '../utils/context';
@@ -29,11 +30,12 @@ class UserInput {
 }
 @Resolver()
 export class UserResolver {
+  userRepository = getRepository(User);
   @Mutation(() => Boolean, { nullable: true })
   async Register(@Arg('UserInput') { username, email, password }: UserInput) {
     try {
-      const emailExists = await User.findOne({ email });
-      const usernameExists = await User.findOne({ username });
+      const emailExists = await this.userRepository.findOne({ email });
+      const usernameExists = await this.userRepository.findOne({ username });
       if (emailExists) {
         return null;
       }
@@ -42,11 +44,12 @@ export class UserResolver {
       }
       const salt = await genSalt(12);
       const hashedPassword = await hash(password, salt);
-      await User.insert({
+      const user = await this.userRepository.create({
         email,
         password: hashedPassword,
         username,
       });
+      await this.userRepository.save(user);
     } catch (e) {
       return {
         error: {
@@ -65,7 +68,9 @@ export class UserResolver {
   ) {
     let user: User;
     try {
-      const existingUser = await User.findOne({ where: { email } });
+      const existingUser = await this.userRepository.findOne({
+        where: { email },
+      });
       if (!existingUser) {
         return {
           error: {
@@ -114,7 +119,7 @@ export class UserResolver {
     if (!token) {
       return null;
     }
-    const user = await User.findOne({ id: token.userId });
+    const user = await this.userRepository.findOne({ id: token.userId });
     if (!user) {
       return null;
     }
@@ -126,7 +131,7 @@ export class UserResolver {
   async ForgotPassword(@Arg('email') email: string) {
     let user: User;
     try {
-      const foundUser = await User.findOne({ email });
+      const foundUser = await this.userRepository.findOne({ email });
       if (!foundUser) {
         return null;
       }
@@ -147,7 +152,11 @@ export class UserResolver {
       from: 'ogbemudiatimothy@gmail.com',
       to: user?.email,
       subject: 'Forgot Password',
-      text: `forgot password reset link: http://localhost:3000/forgot-password/${forgotPasswordToken}`,
+      text: `forgot password reset link: ${
+        __prod__
+          ? `https://seduire-web.vercel.app/forgot-password/${forgotPasswordToken}`
+          : `http://localhost:3000/forgot-password/${forgotPasswordToken}`
+      }`,
     };
 
     transporter.sendMail(mailOptions, function (error, _) {
@@ -175,14 +184,16 @@ export class UserResolver {
       return null;
     }
     try {
-      const user = await User.findOne({ id: forgotPasswordToken.userId });
+      const user = await this.userRepository.findOne({
+        id: forgotPasswordToken.userId,
+      });
       if (!user) {
         return null;
       }
       const salt = await await genSalt(12);
       const hashedPassword = await hash(newPassword, salt);
       user.password = hashedPassword;
-      await user.save();
+      await this.userRepository.save(user);
     } catch (e) {
       return null;
     }

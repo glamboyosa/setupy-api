@@ -5,10 +5,10 @@ import { PostsResponse } from '../utils/response';
 import { getConnection, getRepository } from 'typeorm';
 @Resolver()
 export class PostsResolver {
-  postReposity = getRepository(Posts);
+  postRepository = getRepository(Posts);
   @Query(() => PostsResponse)
   async GetPostById(@Arg('id') id: number) {
-    const post = await Posts.findOne({ where: { id } });
+    const post = await this.postRepository.findOne({ where: { id } });
     if (!post) {
       return {
         error: {
@@ -22,7 +22,7 @@ export class PostsResolver {
   }
   @Query(() => PostsResponse)
   async GetPosts() {
-    const posts = await Posts.find();
+    const posts = await this.postRepository.find();
     if (!posts || posts.length < 1) {
       return {
         error: {
@@ -38,7 +38,7 @@ export class PostsResolver {
   async GetPostsByUser(@Arg('username') username: string) {
     let posts: Posts[];
     try {
-      const userPosts = await Posts.find({ where: { username } });
+      const userPosts = await this.postRepository.find({ where: { username } });
 
       const user = await User.findOne({ where: { username } });
       if (!user) {
@@ -96,22 +96,14 @@ export class PostsResolver {
 
       user = existingUser;
 
-      const post = await Posts.insert({
+      const post = await this.postRepository.create({
         description,
         photoPath: picture,
         username,
       });
-      const recentPost = await Posts.findOne({
-        where: { id: post.generatedMaps[0].id },
-      });
-      if (!recentPost) {
-        return {
-          error: {
-            message: 'failed to insert post',
-          },
-        };
-      }
-      newPost = recentPost;
+      const savedPost = await this.postRepository.save(post);
+
+      newPost = savedPost;
     } catch (e) {
       return {
         error: {
@@ -124,28 +116,11 @@ export class PostsResolver {
       post: newPost,
     };
   }
-  @Mutation(() => Boolean, { nullable: true })
-  async VotePost(
-    @Arg('id') id: number,
-    @Arg('type') type: 'upvote' | 'downvote'
-  ) {
-    const post = await Posts.findOne({ where: { id } });
-    if (!post) {
-      return null;
-    }
-    if (type === 'upvote') {
-      await getConnection().getRepository(Posts).increment({ id }, 'votes', 1);
-      return true;
-    } else if (type === 'downvote') {
-      await getConnection().getRepository(Posts).decrement({ id }, 'votes', 1);
-      return true;
-    }
-    return true;
-  }
+
   @Mutation(() => Boolean, { nullable: true })
   async DeletePost(@Arg('id') id: number) {
     try {
-      await this.postReposity.delete(id);
+      await this.postRepository.delete(id);
       return true;
     } catch (e) {
       return false;
