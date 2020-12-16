@@ -15,7 +15,7 @@ A web application that allows users to upload their dev setups + a small descrip
 - PostgreSQL
 - Cloudinary
 
-web app can be found at https://github.com/glamboyosa-setupy-web
+web app can be found at https://github.com/glamboyosa/setupy-web
 
 ### Credit
 
