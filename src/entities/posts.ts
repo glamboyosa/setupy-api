@@ -1,5 +1,14 @@
 import { Field, Int, ObjectType } from 'type-graphql';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './user';
+import { Votes } from './votes';
 @ObjectType()
 @Entity('posts')
 export class Posts extends BaseEntity {
@@ -15,11 +24,11 @@ export class Posts extends BaseEntity {
   @Column()
   photoPath: string;
 
-  @Field()
-  @Column()
-  username: string;
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.posts)
+  user: User;
 
-  @Field()
-  @Column({ default: 0 })
-  votes: number;
+  @Field(() => [Votes])
+  @OneToMany(() => Votes, (votes) => votes.posts)
+  votes: Votes[];
 }

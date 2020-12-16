@@ -11,6 +11,7 @@ import { PostsResolver } from './resolvers/postsResolver';
 import { UserResolver } from './resolvers/userResolver';
 import { __prod__ } from './utils/constants';
 import { context } from './utils/context';
+import { VotesResolver } from './resolvers/votesResolver';
 (async () => {
   const app = express();
   config();
@@ -39,13 +40,13 @@ import { context } from './utils/context';
     introspection: true,
     playground: true,
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver, PostsResolver],
+      resolvers: [HelloResolver, UserResolver, PostsResolver, VotesResolver],
       validate: false,
     }),
     context: ({ req, res }: context) => ({ req, res }),
   });
   apolloServer.applyMiddleware({ app, cors: false });
-  const port = process.env.PORT || 4000;
+  const port = process.env.PORT || 8000;
   app.listen(port, () => {
     console.log(`started on ${port}`);
   });

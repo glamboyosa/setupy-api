@@ -3,29 +3,23 @@ import {
   BaseEntity,
   Column,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Posts } from './posts';
 @ObjectType()
-@Entity('users')
-export class User extends BaseEntity {
+@Entity('votes')
+export class Votes extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
   id: number;
 
   @Field()
   @Column()
-  email: string;
+  type: string;
 
-  @Column({ length: 100 })
-  password: string;
-
-  @Field()
-  @Column({ length: 100 })
-  username: string;
-
-  @Field(() => [Posts])
-  @OneToMany(() => Posts, (post) => post.user)
-  posts: Posts[];
+  @Field(() => Posts)
+  @ManyToOne(() => Posts, (post) => post.votes)
+  posts: Posts;
 }

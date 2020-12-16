@@ -6,9 +6,13 @@ import { getConnection, getRepository } from 'typeorm';
 @Resolver()
 export class PostsResolver {
   postRepository = getRepository(Posts);
+  userRepository = getRepository(User);
   @Query(() => PostsResponse)
   async GetPostById(@Arg('id') id: number) {
-    const post = await this.postRepository.findOne({ where: { id } });
+    const post = await this.postRepository.findOne(
+      { id },
+      { relations: ['votes'] }
+    );
     if (!post) {
       return {
         error: {
@@ -22,7 +26,9 @@ export class PostsResolver {
   }
   @Query(() => PostsResponse)
   async GetPosts() {
-    const posts = await this.postRepository.find();
+    const posts = await this.postRepository.find({
+      relations: ['votes', 'user'],
+    });
     if (!posts || posts.length < 1) {
       return {
         error: {
@@ -38,24 +44,19 @@ export class PostsResolver {
   async GetPostsByUser(@Arg('username') username: string) {
     let posts: Posts[];
     try {
-      const userPosts = await this.postRepository.find({ where: { username } });
+      const userPosts = await this.userRepository.findOne(
+        { username },
+        { relations: ['posts'] }
+      );
 
-      const user = await User.findOne({ where: { username } });
-      if (!user) {
-        return {
-          error: {
-            message: 'Sorry this user does not exist :/',
-          },
-        };
-      }
-      if (userPosts.length < 1) {
+      if (userPosts!.posts!.length < 1 || !userPosts) {
         return {
           error: {
             message: 'Sorry the user has no posts :/',
           },
         };
       }
-      posts = userPosts;
+      posts = userPosts.posts;
     } catch (e) {
       return {
         error: {
@@ -78,7 +79,10 @@ export class PostsResolver {
     // send in user's ID to test bc it isn't setting a cookie on the server
     // eventually replace with a `Me` Query or alternatively run me query when the modal is rendered and pass in userId
     try {
-      const existingUser = await User.findOne({ where: { username } });
+      const existingUser = await this.userRepository.findOne(
+        { username },
+        { relations: ['posts'] }
+      );
       if (!existingUser) {
         return {
           error: {
@@ -99,10 +103,12 @@ export class PostsResolver {
       const post = await this.postRepository.create({
         description,
         photoPath: picture,
-        username,
+        user,
+        votes: [],
       });
       const savedPost = await this.postRepository.save(post);
-
+      existingUser.posts = [...existingUser.posts, savedPost];
+      await this.userRepository.save(existingUser);
       newPost = savedPost;
     } catch (e) {
       return {

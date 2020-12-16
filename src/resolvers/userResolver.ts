@@ -48,18 +48,16 @@ export class UserResolver {
         email,
         password: hashedPassword,
         username,
+        posts: [],
       });
       await this.userRepository.save(user);
     } catch (e) {
-      return {
-        error: {
-          message: e.message,
-        },
-      };
+      console.log(e.message);
+      return false;
     }
-
     return true;
   }
+
   @Mutation(() => UserResponse)
   async Login(
     @Arg('email') email: string,
@@ -70,6 +68,7 @@ export class UserResolver {
     try {
       const existingUser = await this.userRepository.findOne({
         where: { email },
+        relations: ['posts'],
       });
       if (!existingUser) {
         return {
@@ -86,6 +85,7 @@ export class UserResolver {
           },
         };
       }
+      console.log(existingUser);
       user = existingUser;
     } catch (e) {
       return {
