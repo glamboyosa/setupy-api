@@ -154,7 +154,7 @@ export class UserResolver {
       subject: 'Forgot Password',
       text: `forgot password reset link: ${
         __prod__
-          ? `https://seduire-web.vercel.app/forgot-password/${forgotPasswordToken}`
+          ? `https://setupy-web.vercel.app/forgot-password/${forgotPasswordToken}`
           : `http://localhost:3000/forgot-password/${forgotPasswordToken}`
       }`,
     };
