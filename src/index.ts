@@ -12,6 +12,7 @@ import { UserResolver } from './resolvers/userResolver';
 import { __prod__ } from './utils/constants';
 import { context } from './utils/context';
 import { VotesResolver } from './resolvers/votesResolver';
+import fetch from 'node-fetch';
 (async () => {
   const app = express();
   config();
@@ -41,7 +42,6 @@ import { VotesResolver } from './resolvers/votesResolver';
     playground: true,
     schema: await buildSchema({
       resolvers: [HelloResolver, UserResolver, PostsResolver, VotesResolver],
-      validate: false,
     }),
     context: ({ req, res }: context) => ({ req, res }),
   });
@@ -50,4 +50,10 @@ import { VotesResolver } from './resolvers/votesResolver';
   app.listen(port, () => {
     console.log(`started on ${port}`);
   });
+  // keep Heroku free dynos from sleeping after 30 mins
+  setInterval(async () => {
+    fetch('https://setupy-api.herokuapp.com')
+      .then((_) => console.log('keep the server running'))
+      .catch((err) => console.log(err.message));
+  }, 1000 * 60 * 20);
 })();
