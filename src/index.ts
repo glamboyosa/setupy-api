@@ -51,9 +51,9 @@ import fetch from 'node-fetch';
     console.log(`started on ${port}`);
   });
   // keep Heroku free dynos from sleeping after 30 mins
-  setInterval(async () => {
-    fetch('https://setupy-api.herokuapp.com')
-      .then((_) => console.log('keep the server running ⚡'))
-      .catch((err) => console.log(err.message));
-  }, 1000 * 60 * 20);
+  // setInterval(async () => {
+  //   fetch('https://setupy-api.herokuapp.com')
+  //     .then((_) => console.log('keep the server running ⚡'))
+  //     .catch((err) => console.log(err.message));
+  // }, 1000 * 60 * 20);
 })();
